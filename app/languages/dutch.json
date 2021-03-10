@@ -1,0 +1,55 @@
+{
+	"language": "Nederlands",
+	"button":
+	{
+		"model_dir": "Select model directory",
+		"exit": "Afsluiten"
+	},
+	"mode":
+	{
+		"configure":
+		{
+			"name": "Configureer model",
+			"button":
+			{
+				"append": "Voeg model toe",
+				"clear": "Verwijder model",
+				"import":
+				{
+					"name": "Importeer model",
+					"window_title": "Selecteer model bestand"
+				},
+				"export":
+				{
+					"name": "Exporteer model",
+					"window_title": "Maak nieuw model bestand aan"
+				}
+			}
+		},
+		"encrypt":
+		{
+			"name": "Versleutelen",
+			"encrypt_field":
+			{
+				"top_text": "Versleutel veld",
+				"no_fill": "Geen invoer voor versleutelen!"
+			},
+			"decrypt_field":
+			{
+				"top_text": "Decodeer veld",
+				"no_fill": "Geen invoer voor decoderen!"
+			},
+			"button":
+			{
+				"encrypt": "Versleutelen",
+				"decrypt": "Decoderen",
+				"switch": "Wisselen",
+				"clear": "Leegmaken"
+			}
+		},
+		"advanced_settings":
+		{
+			"name": "Geavanceerde instellingen"
+		}
+	}
+}

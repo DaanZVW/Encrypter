@@ -1,0 +1,55 @@
+{
+    "language": "English",
+    "button":
+    {
+        "model_dir": "Select model directory",
+        "exit": "Exit"
+    },
+    "mode":
+    {
+        "configure":
+        {
+            "name": "Configure model",
+            "button":
+            {
+                "append": "Append model",
+                "clear": "Clear model",
+                "import":
+                {
+                    "name": "Import model",
+                    "window_title": "Select model file"
+                },
+                "export":
+                {
+                    "name": "Export model",
+                    "window_title": "Make new export file"
+                }
+            }
+        },
+        "encrypt":
+        {
+            "name": "Encrypt",
+            "encrypt_field":
+            {
+                "top_text": "Encrypt field",
+                "no_fill": "Nothing to encrypt!"
+            },
+            "decrypt_field":
+            {
+                "top_text": "Decrypt field",
+                "no_fill": "Nothing to decrypt!"
+            },
+            "button":
+            {
+                "encrypt": "Encrypt",
+                "decrypt": "Decrypt",
+                "switch": "Switch",
+                "clear": "Clear"
+            }
+        },
+        "advanced_settings":
+        {
+            "name": "Advanced settings"
+        }
+    }
+}
