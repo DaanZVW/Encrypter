@@ -31,7 +31,7 @@ class gui(tk.Frame):
 
         self.__lang_helper = languageHelper.languageHelper()
         try:
-            self.__lang_data = self.__lang_helper.getLanguage("English")
+            self.__lang_data = self.__lang_helper.getLanguage()
         except exceptions.LanguageNotFound:
             self.__lang_data = self.__lang_helper.getLanguage("english.json")
         self.__json_call_error = False
@@ -47,8 +47,9 @@ class gui(tk.Frame):
         self.__bp_home_buttons = tk.Frame(self.__button_panel)
         self.__bp_widget_buttons = tk.Frame(self.__button_panel, pady=button_group_pady)
 
-        TkMod.selectionEntry(self.__lang_helper.found_languages, self.__langCall("language"),
-                             master=self.__bp_home_buttons, command=self.__reloadLanguage).grid(row=0, sticky="ew")
+        TkMod.selectionEntry(self.__lang_helper.found_languages + [self.__langCall("button", "new_lang")],
+                             self.__langCall("language"), master=self.__bp_home_buttons,
+                             command=self.__reloadLanguage).grid(row=0, sticky="ew")
 
         self.__bp_modes = list(map(lambda mode: self.__langCall("mode", mode, "name"), self.__lang_data["mode"].keys()))
         TkMod.selectionEntry(self.__bp_modes, master=self.__bp_home_buttons,
@@ -162,13 +163,21 @@ class gui(tk.Frame):
 
     # Home buttons
     def __reloadLanguage(self, language: str) -> None:
-        if self.__lang_data["language"] != language:
-            self.__lang_helper.getLanguage(language)
-            tmp_model = self.__model
-            self.destroy()
-            self.__init__()
-            self.__model = tmp_model
-            self.__updateModelInfo()
+        if self.__lang_data["language"] == language:
+            return
+
+        if language not in self.__lang_helper.found_languages:
+            language = tkinter.simpledialog.askstring(title="Give new language",
+                                                      prompt="This may take a while...")
+            if language is None:
+                return
+
+        self.__lang_helper.getLanguage(language)
+        tmp_model = self.__model
+        self.destroy()
+        self.__init__()
+        self.__model = tmp_model
+        self.__updateModelInfo()
 
     def __selectMode(self, mode: str) -> None:
         self.__encypting_panel.grid_forget()

@@ -30,8 +30,8 @@ class languageHelper:
     def __getAllLanguages(self):
         languages = []
         for language in self.__getAllLanguageFiles():
-            with open(f"{self.__lang_path}{language}", "r") as file:
-                languages.append(json.load(file)["language"])
+            self.__openFile(self.__lang_path + language, "r",
+                            lambda file: languages.append(json.load(file)["language"]))
         return languages
 
     def __getConfig(self) -> dict:
@@ -58,6 +58,8 @@ class languageHelper:
 
     def __makeNewLanguage(self, language: str) -> dict:
         lang_data = self.__openFile(self.__default_language, "r", json.load)
+        lang_data["language"] = googletrans.LANGUAGES[language]
+
         translator = googletrans.Translator()
         new_lang = self.__doOnValuesFromDict(
             lang_data, lambda value: translator.translate(value, src="en", dest=language).text)

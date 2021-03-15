@@ -2,7 +2,7 @@
     "language": "English",
     "button":
     {
-        "model_dir": "Select model directory",
+        "new_lang": "Other language",
         "exit": "Exit"
     },
     "mode":
