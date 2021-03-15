@@ -1,7 +1,7 @@
 # Library's
 import tkinter as tk
 from copy import deepcopy
-from tkinter import scrolledtext, filedialog
+import tkinter.scrolledtext, tkinter.filedialog, tkinter.simpledialog
 
 # Src files
 import src.encrypter as encrypter
@@ -30,7 +30,10 @@ class gui(tk.Frame):
         self.__model.setDirectoryPath(self.__model.enviroment_home + "models/")
 
         self.__lang_helper = languageHelper.languageHelper()
-        self.__lang_data = self.__lang_helper.getLanguage()
+        try:
+            self.__lang_data = self.__lang_helper.getLanguage("English")
+        except exceptions.LanguageNotFound:
+            self.__lang_data = self.__lang_helper.getLanguage("english.json")
         self.__json_call_error = False
 
         # ============
@@ -61,11 +64,11 @@ class gui(tk.Frame):
         self.__encypting_panel = tk.Frame(self, padx=5, pady=5)
 
         tk.Label(self.__encypting_panel, text=self.__langCall("mode", "encrypt", "encrypt_field", "top_text")).pack()
-        self.__ep_encrypt_field = scrolledtext.ScrolledText(self.__encypting_panel, height=5, width=50)
+        self.__ep_encrypt_field = tkinter.scrolledtext.ScrolledText(self.__encypting_panel, height=5, width=50)
         self.__ep_encrypt_field.pack()
 
         tk.Label(self.__encypting_panel, text=self.__langCall("mode", "encrypt", "decrypt_field", "top_text")).pack()
-        self.__ep_decrypt_field = scrolledtext.ScrolledText(self.__encypting_panel, height=5, width=50)
+        self.__ep_decrypt_field = tkinter.scrolledtext.ScrolledText(self.__encypting_panel, height=5, width=50)
         self.__ep_decrypt_field.pack()
 
         # Buttons
@@ -86,7 +89,8 @@ class gui(tk.Frame):
         self.__configure_panel = tk.Frame(self, padx=5)
 
         self.__configure_model = modelGui.modelGui()
-        self.__cp_model_info = scrolledtext.ScrolledText(self.__configure_panel, height=15, width=50, state=tk.DISABLED)
+        self.__cp_model_info = tkinter.scrolledtext.ScrolledText(self.__configure_panel,
+                                                                 height=15, width=50, state=tk.DISABLED)
         self.__cp_model_info.grid(row=0, column=1, sticky="n")
 
         # Buttons
@@ -105,6 +109,12 @@ class gui(tk.Frame):
                   width=button_panel_width, command=self.__importModel).grid(row=3)
         tk.Button(self.__cp_widget_buttons, text=self.__langCall("mode", "configure", "button", "export", "name"),
                   width=button_panel_width, command=self.__exportModel).grid(row=4)
+
+        # =================
+        # Advanced settings
+        # =================
+        self.__advanced_panel = tk.Frame(self, padx=5)
+        tk.Button(self.__advanced_panel, text="klik dan", command=self.__test).pack()
 
         # =============
         # Panel packing
@@ -165,6 +175,7 @@ class gui(tk.Frame):
         self.__ep_widget_buttons.pack_forget()
         self.__configure_panel.grid_forget()
         self.__cp_widget_buttons.pack_forget()
+        self.__advanced_panel.pack_forget()
 
         if mode is self.__bp_modes[0]:
             self.__configure_panel.grid(self.__widget_grid_settings)
@@ -172,6 +183,8 @@ class gui(tk.Frame):
         elif mode is self.__bp_modes[1]:
             self.__encypting_panel.grid(self.__widget_grid_settings)
             self.__ep_widget_buttons.pack()
+        elif mode is self.__bp_modes[3]:
+            self.__advanced_panel.grid(self.__widget_grid_settings)
 
     def __exit(self) -> None:
         exit()
@@ -227,8 +240,9 @@ class gui(tk.Frame):
         self.__updateModelInfo()
 
     def __importModel(self) -> None:
-        filename = str(filedialog.askopenfilename(initialdir=self.__model.enviroment_home,
-                                                title=self.__langCall("mode", "configure", "button", "import", "window_title")))
+        filename = tkinter.filedialog.askopenfilename(initialdir=self.__model.enviroment_home,
+                                                      title=self.__langCall("mode", "configure", "button", "import",
+                                                                            "window_title"))
         if not filename:
             return
         self.__model.importModel(filename)
@@ -236,7 +250,16 @@ class gui(tk.Frame):
 
     def __exportModel(self) -> None:
         file_extensions = [('Model Files', '*.model'), ('Text Files', '*.txt')]
-        filename = filedialog.asksaveasfile(initialdir=self.__model.enviroment_home, title=self.__langCall("mode", "configure", "button", "export", "window_title"),
-                                            filetypes=file_extensions, defaultextension=file_extensions)
-        self.__model.exportModel(filename.name)
+        filename = tkinter.filedialog.asksaveasfile(initialdir=self.__model.enviroment_home,
+                                                    title=self.__langCall("mode", "configure", "button", "export",
+                                                                          "window_title"),
+                                                    filetypes=file_extensions, defaultextension=file_extensions)
+        try:
+            self.__model.exportModel(filename.name)
+        except AttributeError:
+            raise exceptions.ExportModelError("Filename not given", "Select a file")
 
+
+    def __test(self):
+        john = tkinter.simpledialog.askstring(title="Dit is een test", prompt="Testo?")
+        print(john)

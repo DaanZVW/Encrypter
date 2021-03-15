@@ -47,6 +47,10 @@
                 "clear": "Clear"
             }
         },
+        "file_encrypt":
+        {
+            "name": "Encrypt files"
+        },
         "advanced_settings":
         {
             "name": "Advanced settings"

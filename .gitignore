@@ -2,3 +2,8 @@ __pycache__/
 .idea/
 export/
 venv/
+
+# Languages
+app/languages/*.json
+!app/languages/english.json
+!app/languages/dutch.json
