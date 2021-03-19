@@ -2,7 +2,7 @@
 	"language": "Nederlands",
 	"button":
 	{
-		"model_dir": "Select model directory",
+		"new_lang": "Nieuwe taal",
 		"exit": "Afsluiten"
 	},
 	"mode":

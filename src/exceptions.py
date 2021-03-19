@@ -69,5 +69,10 @@ class TextNotFoundLanguage(DefaultError):
 # Language
 class LanguageNotFound(DefaultError):
     def __init__(self, language_name: str):
-        super().__init__(f'Language "{language_name}" could not be found!')
+        super().__init__(f'Language "{language_name}" could not be found')
+
+
+class TranslatingFailedLibrary(DefaultError):
+    def __init__(self):
+        super().__init__("Translating was unsuccessful because an error in the translating library")
 

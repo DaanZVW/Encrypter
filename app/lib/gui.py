@@ -1,18 +1,19 @@
 # Library's
 import tkinter as tk
-from copy import deepcopy
-import tkinter.scrolledtext, tkinter.filedialog, tkinter.simpledialog
+import tkinter.filedialog
+import tkinter.scrolledtext
+import tkinter.simpledialog
+
+# Language helper
+import app.languages.config.languageHelper as languageHelper
+
+# GUI files
+import app.lib.TkMod as TkMod
+import app.lib.modelGui as modelGui
 
 # Src files
 import src.encrypter as encrypter
 import src.exceptions as exceptions
-import app.lib.modelGui as modelGui
-
-# GUI files
-import app.lib.TkMod as TkMod
-
-# Language helper
-import app.languages.config.languageHelper as languageHelper
 
 
 class gui(tk.Frame):

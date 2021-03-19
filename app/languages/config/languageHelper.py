@@ -1,10 +1,14 @@
 # Library's
 import os
 import json
+import googletrans
 
 # Import src files
+import src.utils as utils
 import src.exceptions as exception
-import googletrans
+
+# Import GUI files
+import app.lib.popup as popup
 
 
 class languageHelper:
@@ -56,13 +60,49 @@ class languageHelper:
                 new_dict[key] = function(curr_dict[key])
         return new_dict
 
+    def __getAmountValues(self, curr_dict: dict) -> int:
+        amount = 0
+        for key in curr_dict.keys():
+            if type(curr_dict[key]) is dict:
+                amount += self.__getAmountValues(curr_dict[key])
+            else:
+                amount += 1
+        return amount
+
     def __makeNewLanguage(self, language: str) -> dict:
+        global new_lang
+        new_lang = dict
+
         lang_data = self.__openFile(self.__default_language, "r", json.load)
         lang_data["language"] = googletrans.LANGUAGES[language]
 
         translator = googletrans.Translator()
-        new_lang = self.__doOnValuesFromDict(
-            lang_data, lambda value: translator.translate(value, src="en", dest=language).text)
+        popup_window = popup.progressbarStep(
+            popup.progressbarSetting.showOnly,
+            self.__getAmountValues(lang_data),
+            "Loading new language",
+        )
+
+        def __getValues(translate_language):
+            global new_lang
+            new_lang = translate_language
+
+        try:
+            popup_window.setFunctions(
+                lambda: self.__doOnValuesFromDict(
+                    lang_data,
+                    utils.multiFunc(
+                        lambda value: translator.translate(value, src="en", dest=language).text,
+                        lambda value: popup_window.step(1),
+                        lambda value: popup_window.update_idletasks()
+                    )
+                ),
+                __getValues
+            )
+            popup_window.mainloop()
+
+        except AttributeError:
+            raise exception.TranslatingFailedLibrary
 
         lang_file_name = googletrans.LANGUAGES[language] + ".json"
         self.__openFile(self.__lang_path + lang_file_name, "w",
@@ -90,6 +130,3 @@ class languageHelper:
         self.__setConfig(language_json)
 
         return self.__openFile(self.__lang_path + language, "r", lambda file: json.load(file))
-
-
-

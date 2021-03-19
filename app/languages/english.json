@@ -2,7 +2,7 @@
     "language": "English",
     "button":
     {
-        "new_lang": "Other language",
+        "new_lang": "New language",
         "exit": "Exit"
     },
     "mode":
