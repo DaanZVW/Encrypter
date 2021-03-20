@@ -72,7 +72,12 @@ class LanguageNotFound(DefaultError):
         super().__init__(f'Language "{language_name}" could not be found')
 
 
+# Translating Error
 class TranslatingFailedLibrary(DefaultError):
     def __init__(self):
         super().__init__("Translating was unsuccessful because an error in the translating library")
 
+
+class TranslatingFailed(DefaultError):
+    def __init__(self):
+        super().__init__("Translating was unsuccessful because the output was empty")

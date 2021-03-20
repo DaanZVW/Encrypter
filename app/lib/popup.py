@@ -3,14 +3,12 @@ import enum
 import tkinter as tk
 from tkinter import ttk
 
-# import src files
-import src.utils as utils
-
 
 class progressbarSetting(enum.Enum):
     showOnly = 0
-    showButton = 1
-    interact = 2
+    showReturn = 1
+    showButton = 2
+    interact = 3
 
 
 class progressbarStep(tk.Toplevel):
@@ -22,9 +20,11 @@ class progressbarStep(tk.Toplevel):
         self.__function = None
         self.__return_to = None
         self.__setting = setting
+
         tk.Label(self, text=title).pack(pady=5)
         self.__bar = ttk.Progressbar(self, orient=tk.HORIZONTAL, length=200, mode="determinate", maximum=maximum)
         self.__bar.pack()
+
         self.after(100, self.runFunction)
         self.step = self.__bar.step
 
@@ -33,7 +33,11 @@ class progressbarStep(tk.Toplevel):
         self.__return_to = return_to
 
     def runFunction(self) -> None:
-        if self.__setting is progressbarSetting.showOnly:
-            self.__return_to(self.__function())
-        self.destroy()
-        self.quit()
+        try:
+            if self.__setting is progressbarSetting.showOnly:
+                self.__function()
+            elif self.__setting is progressbarSetting.showReturn:
+                self.__return_to(self.__function())
+        finally:
+            self.destroy()
+            self.quit()

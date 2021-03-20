@@ -2,7 +2,13 @@
 	"language": "Nederlands",
 	"button":
 	{
-		"new_lang": "Nieuwe taal",
+		"translate":
+        {
+            "new_lang": "Nieuwe taal",
+            "title": "Vertaler",
+            "input_text": "Geef een taal op te vertalen",
+            "popup_text": "Nieuwe taal inladen"
+        },
 		"exit": "Afsluiten"
 	},
 	"mode":

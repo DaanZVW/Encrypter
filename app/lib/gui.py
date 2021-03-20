@@ -10,6 +10,7 @@ import app.languages.config.languageHelper as languageHelper
 # GUI files
 import app.lib.TkMod as TkMod
 import app.lib.modelGui as modelGui
+import app.lib.utils as utils
 
 # Src files
 import src.encrypter as encrypter
@@ -47,8 +48,7 @@ class gui(tk.Frame):
         self.__button_panel = tk.Frame(self, width=button_panel_width, height=button_panel_height)
         self.__bp_home_buttons = tk.Frame(self.__button_panel)
         self.__bp_widget_buttons = tk.Frame(self.__button_panel, pady=button_group_pady)
-
-        TkMod.selectionEntry(self.__lang_helper.found_languages + [self.__langCall("button", "new_lang")],
+        TkMod.selectionEntry(self.__lang_helper.found_languages + [self.__langCall("button", "translate", "new_lang")],
                              self.__langCall("language"), master=self.__bp_home_buttons,
                              command=self.__reloadLanguage).grid(row=0, sticky="ew")
 
@@ -142,15 +142,7 @@ class gui(tk.Frame):
     # =============
     # Language functions
     def __langCall(self, *args: str) -> str:
-        widget_text = self.__lang_data
-        try:
-            for i in args:
-                widget_text = widget_text[i]
-            return str(widget_text)
-        except (KeyError, TypeError):
-            if self.__json_call_error:
-                raise exceptions.TextNotFoundLanguage(*args)
-            return str(".".join(args))
+        return utils.langCall(self.__lang_data, *args)
 
     # Entry fields functions
     def __setEntryField(self, entry_field: tk, text: str, end_state: tk = tk.NORMAL) -> None:
@@ -168,8 +160,8 @@ class gui(tk.Frame):
             return
 
         if language not in self.__lang_helper.found_languages:
-            language = tkinter.simpledialog.askstring(title="Give new language",
-                                                      prompt="This may take a while...")
+            language = tkinter.simpledialog.askstring(title=self.__langCall("button", "translate", "title"),
+                                                      prompt=self.__langCall("button", "translate", "input_text"))
             if language is None:
                 return
 

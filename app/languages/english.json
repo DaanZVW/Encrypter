@@ -2,7 +2,13 @@
     "language": "English",
     "button":
     {
-        "new_lang": "New language",
+        "translate":
+        {
+            "new_lang": "New language",
+            "title": "Translator",
+            "input_text": "Give new language to translate",
+            "popup_text": "Loading new language"
+        },
         "exit": "Exit"
     },
     "mode":
