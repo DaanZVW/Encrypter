@@ -22,13 +22,13 @@ def getDefaultModel():
 def getModelGUI(**kwargs) -> modelGui:
     """
     Get the GUI for the shift module
-    :param master: Frame to put it on
+    :param kwargs: Settings for the modelGUI
     """
     gui = modelGui(**kwargs)
     default_class = getDefaultModel()
     gui.configure_gui(default_class.name, default_class.setting)
     gui.addEnumSelectionSetting("Shift Setting", list(map(lambda setting: str(setting), shiftSettings)), shiftSettings)
-    gui.addSetting("Shift amount", int)
+    gui.addEntrySetting("Shift amount", int)
     return gui
 
 

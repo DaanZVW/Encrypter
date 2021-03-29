@@ -4,7 +4,6 @@ from enum import Enum
 
 # Src files
 import app.lib.TkMod as TkMod
-from src.encrypter import encryptSettings
 from src.exceptions import EntryNotConvertible, EntryNotFilled
 
 
@@ -21,7 +20,7 @@ class modelGui(tk.Frame):
         self.__current_row = 0
         self.__entry_inputs = list()
 
-    def configure_gui(self, name: str, setting: encryptSettings) -> None:
+    def configure_gui(self, name: str, setting: Enum) -> None:
         """
         Display the information of the model
         :param name: Name of the model
@@ -34,7 +33,7 @@ class modelGui(tk.Frame):
         tk.Label(self, text=str(setting)).grid(row=self.__current_row, column=1, sticky="w")
         self.__current_row += 1
 
-    def __internalAddSetting(self, setting_name: str, entry_object: tk, var_type: type) -> None:
+    def addSetting(self, setting_name: str, entry_object: tk, var_type: type) -> None:
         """
         Abstract function which adds an object to the menu
         :param setting_name: Name of the setting
@@ -46,7 +45,7 @@ class modelGui(tk.Frame):
         self.__entry_inputs.append((setting_name, entry_object, var_type))
         self.__current_row += 1
 
-    def addSetting(self, setting_name: str, var_type: type = str, entry_var_type: type = None) -> None:
+    def addEntrySetting(self, setting_name: str, var_type: type = str, entry_var_type: type = None) -> None:
         """
         Display a given setting of the model
         :param setting_name: Name of the setting
@@ -55,7 +54,7 @@ class modelGui(tk.Frame):
         """
         if entry_var_type is None:
             entry_var_type = var_type
-        self.__internalAddSetting(setting_name, TkMod.restrictedEntry(entry_var_type, master=self), var_type)
+        self.addSetting(setting_name, TkMod.restrictedEntry(entry_var_type, master=self), var_type)
 
     def addCheckboxSetting(self, setting_name: str, choice_name: str, var_type: type = str) -> None:
         """
@@ -64,7 +63,7 @@ class modelGui(tk.Frame):
         :param choice_name: Text beside checkbox
         :param var_type: Type of variable which the entry value is converted too
         """
-        self.__internalAddSetting(setting_name, TkMod.checkboxEntry(choice_name, var_type, master=self), var_type)
+        self.addSetting(setting_name, TkMod.checkboxEntry(choice_name, var_type, master=self), var_type)
 
     def addSelectionSetting(self, setting_name: str, selection_list: list, var_type: type = str) -> None:
         """
@@ -73,7 +72,7 @@ class modelGui(tk.Frame):
         :param selection_list: List with selection for user to choose
         :param var_type: Type of variable which the entry value is converted too
         """
-        self.__internalAddSetting(setting_name, TkMod.selectionEntry(selection_list, master=self), var_type)
+        self.addSetting(setting_name, TkMod.selectionEntry(selection_list, master=self), var_type)
 
     def addEnumSelectionSetting(self, setting_name: str, selection_list: list, var_type: type = str) -> None:
         """

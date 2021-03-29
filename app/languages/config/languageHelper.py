@@ -91,13 +91,6 @@ class languageHelper:
         :param language: Language that needs translating
         :return: Translated dict with language format
         """
-        new_lang = {}
-
-        lang_data = self.__openFile(self.__default_language_path, "r", json.load)
-        lang_data["language"] = googletrans.LANGUAGES[language]
-
-        translator = googletrans.Translator()
-
         try:
             last_lang = self.__getConfig()["last_lang"]
             old_lang_data = self.__openFile(self.__lang_path + last_lang,
@@ -106,27 +99,22 @@ class languageHelper:
             old_lang_data = self.__openFile(self.__lang_path + self.__default_language,
                                             "r", lambda file: json.load(file))
 
+        default_lang_data = self.__openFile(self.__default_language_path, "r", json.load)
+        default_lang_data["language"] = googletrans.LANGUAGES[language]
+
+        new_lang = {}
+        translator = googletrans.Translator()
+
         popup_window = popup.progressbarStep(
-            popup.progressbarSetting.showReturn,
-            self.__getAmountValues(lang_data),
             utils.langCall(old_lang_data, "button", "translate", "title"),
-            utils.langCall(old_lang_data, "button", "translate", "popup_text")
+            utils.langCall(old_lang_data, "button", "translate", "popup_text"),
+            self.__getAmountValues(default_lang_data),
+            utils.multiFunc(lambda translated_lang: new_lang.update(translated_lang)),
+            utils.multiFunc(lambda value: translator.translate(value, src="en", dest=language).text)
         )
+        popup_window.function = utils.callbackFunc(self.__doOnValuesFromDict, default_lang_data, popup_window.function)
 
         try:
-            popup_window.setFunctions(
-                lambda: self.__doOnValuesFromDict(
-                    lang_data,
-                    utils.multiFunc(
-                        lambda value: translator.translate(value, src="en", dest=language).text,
-                        lambda _: popup_window.step(1),
-                        lambda _: popup_window.update_idletasks()
-                    )
-                ),
-                utils.multiFunc(
-                    lambda translated_lang: new_lang.update(translated_lang)
-                )
-            )
             popup_window.mainloop()
 
         except AttributeError:
@@ -147,13 +135,16 @@ class languageHelper:
             except KeyError:
                 language = self.__default_language
 
+            if not os.path.exists(self.__lang_path + language):
+                language = self.__default_language
+
         if language not in self.__found_languages_files:
             if language in self.found_languages:
                 index = self.found_languages.index(language)
                 language = self.__found_languages_files[index]
 
-            elif (lang_info := self.__languageApiExist(language))[0]:
-                language = self.__makeNewLanguage(lang_info[1])
+            elif self.__languageApiExist(language):
+                language = self.__makeNewLanguage(language)
                 self.__found_languages_files = self.__getAllLanguageFiles()
                 self.found_languages = self.__getAllLanguages()
 

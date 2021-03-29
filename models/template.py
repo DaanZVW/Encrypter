@@ -14,6 +14,9 @@ from src.model import model, encryptSettings
 def getDefaultModel() -> model:
     """
     This function will be used when importing models
+    NOTE: This function is a callback for models when importing
+          new models from a file. If not implemented, importing
+          this model will become impossible.
     """
     return defaultModel(defaultModelSettings.default)
 
@@ -21,7 +24,10 @@ def getDefaultModel() -> model:
 def getModelGUI(**kwargs) -> modelGui:
     """
     Get the GUI for the default module
-    :param master: Frame to put it on
+    :param kwargs: Settings for the modelGUI
+    NOTE: This function is a callback for configuring models in
+          the GUI. If not implemented, configuring models through
+          the GUI will become impossible.
     """
     gui = modelGui(**kwargs)
     default_class = getDefaultModel()
@@ -29,7 +35,7 @@ def getModelGUI(**kwargs) -> modelGui:
     gui.addEnumSelectionSetting("Default selection setting",
                                 list(map(lambda selection: str(selection), defaultModelSettings)),
                                 defaultModelSettings)
-    gui.addSetting("Default setting", str, str)
+    gui.addEntrySetting("Default setting", str, str)
     gui.addCheckboxSetting("Default checkbox setting", "Checkbox", str)
     return gui
 

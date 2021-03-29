@@ -22,13 +22,13 @@ def getDefaultModel() -> model:
 def getModelGUI(**kwargs) -> modelGui:
     """
     Get the GUI for the Swap module
-    :param master: Frame to put it on
+    :param kwargs: Settings for the modelGUI
     """
     gui = modelGui(**kwargs)
     default_class = getDefaultModel()
     gui.configure_gui(default_class.name, default_class.setting)
     gui.addEnumSelectionSetting("Swap setting", list(map(lambda setting: str(setting), swapSettings)), swapSettings)
-    gui.addSetting("Swap amount", int)
+    gui.addEntrySetting("Swap amount", int)
     gui.addCheckboxSetting("Random seed", "Custom", int)
     return gui
 

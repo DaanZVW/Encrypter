@@ -2,64 +2,40 @@
 import enum
 import tkinter as tk
 from tkinter import ttk
+from app.lib.utils import multiFunc
 
 
 class popupWindow(tk.Toplevel):
-    def __init__(self, title: str, information: str, return_to, function=None):
+    def __init__(self, title: str, information: str, return_to: multiFunc, function: multiFunc = None) -> None:
         super().__init__()
         self.title(title)
         tk.Label(self, text=information).pack(pady=5)
 
-        self.__return_to = return_to
-        self.__function = function
-        self.after(10, self.__runFunction)  # Must be 1> otherwise widget wont be loaded
-
-    def __runFunction(self) -> None:
-        try:
-            if self.__function is None:
-                self.__return_to()
-            else:
-                self.__return_to(self.__function())
-        finally:
-            self.destroy()
-            self.quit()
-
-
-class progressbarSetting(enum.Enum):
-    showOnly = 0
-    showReturn = 1
-    showButton = 2
-    interact = 3
-
-
-class progressbarStep(tk.Toplevel):
-    def __init__(self, setting: progressbarSetting, maximum: int, title: str, info_loading: str):
-        super().__init__()
-        self.title(title)
-        self.geometry("250x60")
-
-        self.__maximum = maximum
-        self.__function = None
-        self.__return_to = None
-        self.__setting = setting
-
-        tk.Label(self, text=info_loading).pack(pady=5)
-        self.__bar = ttk.Progressbar(self, orient=tk.HORIZONTAL, length=220, mode="determinate", maximum=maximum)
-        self.__bar.pack()
-
-        self.after(1, self.runFunction)
-        self.step = self.__bar.step
-
-    def setFunctions(self, function, return_to=None) -> None:
-        self.__function = function
-        self.__return_to = return_to
+        self.return_to = return_to
+        self.function = function
 
     def runFunction(self) -> None:
         try:
-            if self.__setting is progressbarSetting.showOnly:
-                self.__function()
-            elif self.__setting is progressbarSetting.showReturn:
-                self.__return_to(self.__function())
+            if self.function is None:
+                self.return_to()
+            else:
+                self.return_to(self.function())
         finally:
             self.destroy()
             self.quit()
+
+
+class progressbarStep(popupWindow):
+    def __init__(self, title: str, info_loading: str, maximum: int, return_to: multiFunc, function: multiFunc) -> None:
+        super().__init__(title, info_loading, return_to)
+        self.geometry("250x60")
+
+        self.__bar = ttk.Progressbar(self, orient=tk.HORIZONTAL, length=220, mode="determinate", maximum=maximum)
+        self.__bar.pack()
+
+        function.functions.extend([lambda: self.__bar.step(1), lambda: self.update_idletasks()])
+        self.function = function
+
+        # Doing it after 50ms so the popupWindow can display itself
+        self.after(50, self.runFunction)
+
