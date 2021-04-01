@@ -105,6 +105,7 @@ class encrypter(model):
         """
         try:
             all_files = [f for f in os.listdir(self.directory_path) if os.path.isfile(f"{self.directory_path}{f}")]
+            all_files = list(filter(lambda file: file.endswith(".py"), all_files))
         except FileNotFoundError:
             raise DirNotFound(self.directory_path, "Make sure the directory_path variable is set.")
 
@@ -120,7 +121,7 @@ class encrypter(model):
         :return: The list with models
         """
         imp_dir, all_files = self.__getModelsPath()
-        return list(map(lambda f: importlib.import_module(f"{imp_dir}{f}").getDefaultModel(), all_files))
+        return [importlib.import_module(f"{imp_dir}{f}").getDefaultModel() for f in all_files]
 
     def getGUIFromDirectory(self, model_name: str, **kwargs):
         """

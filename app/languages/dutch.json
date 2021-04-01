@@ -53,6 +53,10 @@
 				"clear": "Leegmaken"
 			}
 		},
+		"file_encrypt":
+        {
+            "name": "Versleutel bestanden"
+        },
 		"advanced_settings":
 		{
 			"name": "Geavanceerde instellingen"
