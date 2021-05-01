@@ -1,7 +1,8 @@
 # Library's
-import enum
 import tkinter as tk
 from tkinter import ttk
+
+# Files
 from app.lib.utils import multiFunc
 
 
@@ -14,7 +15,7 @@ class popupWindow(tk.Toplevel):
         self.return_to = return_to
         self.function = function
 
-    def runFunction(self) -> None:
+    def __call__(self, *args, **kwargs):
         try:
             if self.function is None:
                 self.return_to()
@@ -37,5 +38,5 @@ class progressbarStep(popupWindow):
         self.function = function
 
         # Doing it after 50ms so the popupWindow can display itself
-        self.after(50, self.runFunction)
+        self.after(50, self.__call__)
 

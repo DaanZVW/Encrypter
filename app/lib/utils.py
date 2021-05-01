@@ -42,3 +42,20 @@ def langCall(language_dict: dict, *keys: str) -> str:
         return str(widget_text)
     except (KeyError, TypeError):
         return str(".".join(keys))
+
+
+def openFile(filename: str, mode: str, function=None):
+    """
+    Returns the function with filestream of filename
+    :param filename: Name of the file
+    :param mode: Mode which the file will be opened with
+    :param function: Function on filestream
+    :return: Result of function with filestream
+    """
+    with open(filename, mode) as file:
+        if function is not None:
+            return function(file)
+
+
+
+

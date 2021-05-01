@@ -1,5 +1,6 @@
 # Library's
 import tkinter as tk
+from typing import *
 
 
 class restrictedEntry(tk.Entry):
@@ -49,9 +50,10 @@ class checkboxEntry(tk.Frame):
         super().__init__(**kwargs)
         self.__var = tk.IntVar()
         self.__var.trace('w', self.__entryBehaviour)
-        tk.Checkbutton(self, text=checkbox_text, variable=self.__var, onvalue=1, offvalue=0).grid(sticky="w")
-        self.__entry = restrictedEntry(entry_var_type, master=self, state=tk.DISABLED)
-        self.__entry.grid(row=0, column=1, sticky="w")
+        tk.Checkbutton(self, text=checkbox_text, variable=self.__var, onvalue=1, offvalue=0).grid(column=0)
+        self.__entry = restrictedEntry(entry_var_type, master=self, width=kwargs.get("width", None),
+                                       state=kwargs.get("state", tk.DISABLED))
+        self.__entry.grid(row=0, column=1)
         self.set = self.__entry.set
         self.__old_value = ""
 
@@ -88,10 +90,30 @@ class selectionEntry(tk.OptionMenu):
         Constructor
         :param menu_options: List of items where user can choose from
         :param show_option: String which is first displayed on selectionEntry
-        :param kwargs: Other args which will be given to the tk.Frame
+        :param kwargs: Other args which will be given to the tk.OptionMenu
         """
         self.__var = tk.StringVar()
         self.__var.set(menu_options[0] if show_option is None else show_option)
         super().__init__(kwargs.pop("master", None), self.__var, *menu_options, **kwargs)
         self.set, self.get = self.__var.set, self.__var.get
+
+
+class buttonEntry(tk.Frame):
+    """
+    Entry where the input of a user will be given callback when the button is pressed.
+    """
+    def __init__(self, entry_var_type: type, button_text: str, callback: Callable[[str], None], **kwargs):
+        """
+        Constructor
+        :param entry_var_type: Type of data the Entry box restricts itself too
+        :param button_text: Text which is put on the button
+        :param callback: Function which is ran when button is pressed
+        :param kwargs: Other args which will be given to the tk.Frame
+        """
+        super().__init__(**kwargs)
+        self.__entry = restrictedEntry(entry_var_type, master=self, width=kwargs.get("width", None))
+        self.__entry.grid(column=0)
+        self.__callback = callback
+        tk.Button(self, text=button_text, command=self.__callback).grid(row=0, column=1)
+        self.set, self.get = self.__entry.set, self.__entry.get
 

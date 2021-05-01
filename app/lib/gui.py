@@ -3,6 +3,7 @@ import tkinter as tk
 import tkinter.filedialog
 import tkinter.scrolledtext
 import tkinter.simpledialog
+from typing import Callable
 
 # Language helper
 import app.languages.config.languageHelper as languageHelper
@@ -21,7 +22,6 @@ class gui(tk.Frame):
     """
     Class for making a encrypter gui
     """
-
     def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
 
@@ -38,14 +38,25 @@ class gui(tk.Frame):
             self.__lang_data = self.__lang_helper.getLanguage("english.json")
         self.__json_call_error = False
 
+        # Variables for sizes
+        global_padx = 5
+        global_pady = 5
+
+        encrypt_width = 50
+        encrypt_height = 5
+
+        configure_width = 50
+        configure_height = 15
+
+        encryptfile_width = 50
+
         # ============
         # Button Panel
         # ============
         button_panel_width = 20
-        button_panel_height = 100
         button_group_pady = 10
 
-        self.__button_panel = tk.Frame(self, width=button_panel_width, height=button_panel_height)
+        self.__button_panel = tk.Frame(self)
         self.__bp_home_buttons = tk.Frame(self.__button_panel)
         self.__bp_widget_buttons = tk.Frame(self.__button_panel, pady=button_group_pady)
         TkMod.selectionEntry(self.__lang_helper.found_languages + [self.__langCall("button", "translate", "new_lang")],
@@ -63,14 +74,16 @@ class gui(tk.Frame):
         # Encrypting panel
         # ================
         # Panel
-        self.__encypting_panel = tk.Frame(self, padx=5, pady=5)
+        self.__encypting_panel = tk.Frame(self, padx=global_padx, pady=global_pady)
 
         tk.Label(self.__encypting_panel, text=self.__langCall("mode", "encrypt", "encrypt_field", "top_text")).pack()
-        self.__ep_encrypt_field = tkinter.scrolledtext.ScrolledText(self.__encypting_panel, height=5, width=50)
+        self.__ep_encrypt_field = tkinter.scrolledtext.ScrolledText(self.__encypting_panel, height=encrypt_height,
+                                                                    width=encrypt_width)
         self.__ep_encrypt_field.pack()
 
         tk.Label(self.__encypting_panel, text=self.__langCall("mode", "encrypt", "decrypt_field", "top_text")).pack()
-        self.__ep_decrypt_field = tkinter.scrolledtext.ScrolledText(self.__encypting_panel, height=5, width=50)
+        self.__ep_decrypt_field = tkinter.scrolledtext.ScrolledText(self.__encypting_panel, height=encrypt_height,
+                                                                    width=encrypt_width)
         self.__ep_decrypt_field.pack()
 
         # Buttons
@@ -88,17 +101,17 @@ class gui(tk.Frame):
         # Configure panel
         # ===============
         # Panel
-        self.__configure_panel = tk.Frame(self, padx=5)
+        self.__configure_panel = tk.Frame(self, padx=global_padx, pady=global_pady)
 
         self.__configure_model = modelGui.modelGui()
-        self.__cp_model_info = tkinter.scrolledtext.ScrolledText(self.__configure_panel,
-                                                                 height=15, width=50, state=tk.DISABLED)
+        self.__cp_model_info = tkinter.scrolledtext.ScrolledText(self.__configure_panel, height=configure_height,
+                                                                 width=configure_width, state=tk.DISABLED)
         self.__cp_model_info.grid(row=0, column=1, sticky="n")
 
         # Buttons
         self.__cp_widget_buttons = tk.Frame(self.__bp_widget_buttons)
 
-        model_names = list(map(lambda model: model.name, self.__model.getModelsFromDirectory()))
+        model_names = [model.name for model in self.__model.getModelsFromDirectory()]
         self.__cp_model_select = TkMod.selectionEntry(model_names, master=self.__cp_widget_buttons,
                                                       command=self.__loadModelGui)
         self.__cp_model_select.grid(sticky="ew")
@@ -112,11 +125,39 @@ class gui(tk.Frame):
         tk.Button(self.__cp_widget_buttons, text=self.__langCall("mode", "configure", "button", "export", "name"),
                   width=button_panel_width, command=self.__exportModel).grid(row=4)
 
+        # ================
+        # Encrypting files
+        # ================
+        # Panel
+        self.__encyptfile_panel = tk.Frame(self, padx=global_padx, pady=global_pady)
+
+        tk.Label(self.__encyptfile_panel, text=self.__langCall("mode", "file_encrypt", "input_file", "top_text")).pack()
+        self.__ef_input = TkMod.buttonEntry(str, self.__langCall("mode", "file_encrypt", "input_file", "search"),
+                                            self.__selectInputFile, master=self.__encyptfile_panel,
+                                            width=encryptfile_width)
+        self.__ef_input.pack()
+
+        tk.Label(self.__encyptfile_panel, text=self.__langCall("mode", "file_encrypt", "output_file", "top_text")
+                 ).pack()
+        self.__ef_output = TkMod.buttonEntry(str, self.__langCall("mode", "file_encrypt", "output_file", "search"),
+                                             self.__selectOutputFile, master=self.__encyptfile_panel,
+                                             width=encryptfile_width)
+        self.__ef_output.pack()
+
+        # Buttons
+        self.__ef_widget_buttons = tk.Frame(self.__bp_widget_buttons)
+
+        tk.Button(self.__ef_widget_buttons, text=self.__langCall("mode", "file_encrypt", "button", "encrypt"),
+                  width=button_panel_width, command=self.__fileEncrypt).grid(row=0)
+        tk.Button(self.__ef_widget_buttons, text=self.__langCall("mode", "file_encrypt", "button", "decrypt"),
+                  width=button_panel_width, command=self.__fileDecrypt).grid(row=1)
+
+
         # =================
         # Advanced settings
         # =================
-        self.__advanced_panel = tk.Frame(self, padx=5)
-        tk.Button(self.__advanced_panel, text="klik dan", command=self.__test).pack()
+        self.__advanced_panel = tk.Frame(self, padx=global_padx, pady=global_pady)
+        tk.Button(self.__advanced_panel, text="test", command=self.__test).pack()
 
         # =============
         # Panel packing
@@ -173,18 +214,29 @@ class gui(tk.Frame):
         self.__updateModelInfo()
 
     def __selectMode(self, mode: str) -> None:
+        # Forget all panels and button panels
         self.__encypting_panel.grid_forget()
         self.__ep_widget_buttons.pack_forget()
+
         self.__configure_panel.grid_forget()
         self.__cp_widget_buttons.pack_forget()
-        self.__advanced_panel.pack_forget()
 
+        self.__advanced_panel.grid_forget()
+        self.__encyptfile_panel.grid_forget()
+
+        # Enable the correct panel and button panel
         if mode is self.__bp_modes[0]:
             self.__configure_panel.grid(self.__widget_grid_settings)
             self.__cp_widget_buttons.pack()
+
         elif mode is self.__bp_modes[1]:
             self.__encypting_panel.grid(self.__widget_grid_settings)
             self.__ep_widget_buttons.pack()
+
+        elif mode is self.__bp_modes[2]:
+            self.__encyptfile_panel.grid(self.__widget_grid_settings)
+            self.__ef_widget_buttons.pack()
+
         elif mode is self.__bp_modes[3]:
             self.__advanced_panel.grid(self.__widget_grid_settings)
 
@@ -261,6 +313,29 @@ class gui(tk.Frame):
         except AttributeError:
             raise exceptions.ExportModelError("Filename not given", "Select a file")
 
+    def __selectInputFile(self) -> None:
+        self.__ef_input.set(tkinter.filedialog.askopenfilename(initialdir=self.__model.enviroment_home,
+                                                               title=self.__langCall("mode", "file_encrypt",
+                                                                                     "input_file", "search_name")))
+
+    def __selectOutputFile(self) -> None:
+        self.__ef_output.set(tkinter.filedialog.askopenfilename(initialdir=self.__model.enviroment_home,
+                                                                title=self.__langCall("mode", "file_encrypt",
+                                                                                      "output_file", "search_name")))
+
+    def __internalFileEncrypt(self, encrypt_function: Callable[[str], str]) -> None:
+        file_content = utils.openFile(self.__ef_input.get(), "r", lambda file: file.read())
+        file_content = encrypt_function(file_content)
+        try:
+            utils.openFile(self.__ef_output.get(), "w", lambda file: file.write(file_content))
+        except FileNotFoundError:
+            utils.openFile(self.__ef_input.get(), "w", lambda file: file.write(file_content))
+
+    def __fileEncrypt(self) -> None:
+        self.__internalFileEncrypt(lambda content: self.__model.encrypt(content))
+
+    def __fileDecrypt(self) -> None:
+        self.__internalFileEncrypt(lambda content: self.__model.decrypt(content))
 
     def __test(self):
         john = tkinter.simpledialog.askstring(title="Dit is een test", prompt="Testo?")

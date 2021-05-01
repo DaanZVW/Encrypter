@@ -55,7 +55,26 @@
         },
         "file_encrypt":
         {
-            "name": "Encrypt files"
+            "name": "Encrypt files",
+            "input_file":
+            {
+                "top_text": "Input file location",
+                "search": "Select file",
+                "search_name": "Select a file for encryption"
+            },
+            "output_file":
+            {
+                "top_text": "Output file location",
+                "search": "Select file",
+                "search_name": "Select a file for output"
+            },
+            "button":
+            {
+                "encrypt": "Encrypt",
+                "decrypt": "Decrypt",
+                "switch": "Switch",
+                "clear": "Clear"
+            }
         },
         "advanced_settings":
         {
