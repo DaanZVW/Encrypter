@@ -27,7 +27,7 @@ def getModelGUI(**kwargs) -> modelGui:
     default_class = getDefaultModel()
     gui.configure_gui(default_class.name, default_class.setting)
     gui.addEnumSelectionSetting("Default selection setting",
-                                list(map(lambda selection: str(selection), defaultModelSettings)),
+                                list(map(str, defaultModelSettings)),
                                 defaultModelSettings)
     gui.addSetting("Default setting", str, str)
     gui.addCheckboxSetting("Default checkbox setting", "Checkbox", str)
@@ -105,5 +105,5 @@ class defaultModel(model):
         return f"{self.name}, {self.setting}:\n\t"
 
     def __repr__(self):
-        return self.__str__() + ", "
+        return f'{self.__str__()}, '
 

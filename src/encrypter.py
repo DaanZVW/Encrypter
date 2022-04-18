@@ -21,7 +21,7 @@ class encrypter(model):
         Encrypter constructor
         """
         super().__init__("Encrypter", encryptSettings.allBase)
-        self.__models = list()
+        self.__models = []
 
         self.directory_path = ""
         self.model_exceptions = ["template.py"]
@@ -39,11 +39,10 @@ class encrypter(model):
         :return: Boolean
         """
         for model_t_internal in self.__models:
-            if model_t.name == model_t_internal.name:
-                if not model_t_internal.checkRestriction(model_t.restrictions()):
-                    message = f"New {model_t.name} model settings doesnt match older {model_t_internal.name} model " \
-                              f"settings, this may result in an unresolvable message when encrypted."
-                    warnings.warn(message)
+            if model_t.name == model_t_internal.name and not model_t_internal.checkRestriction(model_t.restrictions()):
+                message = f"New {model_t.name} model settings doesnt match older {model_t_internal.name} model " \
+                          f"settings, this may result in an unresolvable message when encrypted."
+                warnings.warn(message)
         self.__models.append(model_t)
         return True
 
@@ -190,9 +189,7 @@ class encrypter(model):
 
         self.__models.clear()
 
-        model_directory = {}
-        for module in self.getModelsFromDirectory():
-            model_directory[module.name] = module
+        model_directory = {module.name: module for module in self.getModelsFromDirectory()}
 
         with open(filename, "r") as file:
             file_output = file.read()
@@ -202,13 +199,12 @@ class encrypter(model):
 
         for line in file_output.splitlines():
             model_information = line.split(self.file_spacing)
-            if model_information[0] in model_directory:
-                new_model = deepcopy(model_directory[model_information[0]])
-                new_model.setAttributes(model_information[1:])
-                self.appendModel(new_model)
-            else:
+            if model_information[0] not in model_directory:
                 raise ImportModelError(f'"{model_information[0]}" Model does not exist',
                                        "Import the model to get access to it")
+            new_model = deepcopy(model_directory[model_information[0]])
+            new_model.setAttributes(model_information[1:])
+            self.appendModel(new_model)
         return True
 
     def __str__(self):

@@ -75,15 +75,15 @@ class shift(model):
         self.__shift_amount = amount
 
         if self.__shift_setting.value < abs(amount):
-            warn_message = "Shift amount is more than selected range: 0 - {}".format(
-                self.__shift_setting
-            )
+            warn_message = f"Shift amount is more than selected range: 0 - {self.__shift_setting}"
+
             warnings.warn(warn_message)
 
         elif self.__shift_setting.value / 2 < abs(amount) and self.__shift_setting != shiftSettings.full:
             optimized_number = self.__shift_setting.value - abs(amount)
             optimized_number *= -1 if abs(amount) == amount else 1
-            warn_message = "Shift amount is not optimized, try shift_amount: {}".format(optimized_number)
+            warn_message = f"Shift amount is not optimized, try shift_amount: {optimized_number}"
+
             warnings.warn(warn_message)
 
     # Internal functions
