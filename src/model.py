@@ -77,5 +77,5 @@ class model:
         return f"{self.name}, {self.setting}:\n\t"
 
     def __repr__(self):
-        return self.__str__() + ", "
+        return f'{self.__str__()}, '
 
